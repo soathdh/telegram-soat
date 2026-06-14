@@ -23,7 +23,7 @@ API_ID = 33618869
 API_HASH = '21f53d0ff713f14f3b8ef7606f9123eb'
 
 # Vaqt zonasi - O'zbekiston (Toshkent)
-TZ = pytz.timezone('Asia/Toshkent')
+TZ = pytz.timezone('Asia/Tashkent')
 
 # Loglarni sozlash
 logging.basicConfig(
