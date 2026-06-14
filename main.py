@@ -1,7 +1,7 @@
-
 import sys
+import os
 
-# Python 3.13+ uchun imghdr muammosini hal qilish (Railway xatolik bermasligi uchun)
+# Python 3.13+ uchun imghdr muammosini majburlab hal qilish
 try:
     import imghdr
 except ImportError:
@@ -17,12 +17,11 @@ import pytz
 from telethon import TelegramClient
 from telethon.tl.functions.account import UpdateProfileRequest
 
-# --- SOZLAMALAR ---
-# Bu yerga o'zingizning API_ID va API_HASH qiymatlaringizni yozing
-API_ID = 33618869  
+# --- SIZNING SOZLAMALARINGIZ (TAYYORLANDI) ---
+API_ID = 33618869
 API_HASH = '21f53d0ff713f14f3b8ef7606f9123eb'
 
-# Vaqt zonasi - O'zbekiston (Toshkent)
+# Vaqt zonasi - O'zbekiston (Tashkent)
 TZ = pytz.timezone('Asia/Tashkent')
 
 # Loglarni sozlash
@@ -32,11 +31,25 @@ logging.basicConfig(
 )
 
 async def main():
-    # Sessiya fayli orqali ulanish
-    client = TelegramClient('clock_session', API_ID, API_HASH)
+    session_name = 'clock_session'
+    
+    # Railway SQLite faylini o'qishda xato bermasligi uchun eski xotirani tozalash
+    if os.path.exists(f"{session_name}.session-journal"):
+        try:
+            os.remove(f"{session_name}.session-journal")
+        except Exception:
+            pass
+
+    # Telegram Client ulanishi
+    client = TelegramClient(session_name, API_ID, API_HASH)
     
     logging.info("Telegram Client ishga tushirilmoqda...")
-    await client.start()
+    await client.connect()
+    
+    if not await client.is_user_authorized():
+        logging.error("Xatolik: Sessiya fayli mos kelmadi yoki tasdiqlanmagan!")
+        return
+        
     logging.info("Sessiya muvaffaqiyatli ulandi!")
 
     last_time = ""
@@ -48,19 +61,19 @@ async def main():
             
             # Har minutda vaqt o'zgarganda nikni yangilash
             if current_time != last_time:
-                # Aynan siz xohlagan format: FEIN | 23:45
+                # Format: FEIN | 23:45
                 yangi_ism = f"FEIN | {current_time}"
                 
-                # Telegramda profil ismini o'zgartirish buyrug'i
+                # Nikni yangilash buyrug'i
                 await client(UpdateProfileRequest(first_name=yangi_ism))
                 logging.info(f"Profil ismi yangilandi: {yangi_ism}")
                 
                 last_time = current_time
                 
         except Exception as e:
-            logging.error(f"Ismni yangilashda xatolik: {e}")
+            logging.error(f"Ismni yangilashda xatolik yuz berdi: {e}")
             
-        # Vaqtni har 30 soniyada tekshirib turish
+        # Har 30 soniyada vaqtni tekshirish
         await asyncio.sleep(30)
 
 if __name__ == '__main__':
