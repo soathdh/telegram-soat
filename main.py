@@ -18,7 +18,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 async def main():
     # 'session_name' nomi noutbukdagi .session fayli nomi bilan bir xil bo'lishi kerak.
     # Agar noutbukda fayl nomi 'session_name.session' bo'lsa, bu yerga 'session_name' yoziladi.
-    client = TelegramClient('FEIN', API_ID, API_HASH)
+    client = TelegramClient('clock_session', API_ID, API_HASH)
     
     await client.start()
     logging.info("Soat skripti VPS serverda muvaffaqiyatli ishga tushdi!")
