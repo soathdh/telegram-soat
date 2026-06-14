@@ -5,7 +5,8 @@ except ImportError:
     import types
     imghdr = types.ModuleType('imghdr')
     imghdr.what = lambda filename, h=None: None
-    sys.modules['imghdr'] = imghdrimport asyncio
+    sys.modules['imghdr'] = imghdr
+import asyncio
 import logging
 from datetime import datetime
 import pytz
