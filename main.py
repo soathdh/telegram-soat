@@ -18,7 +18,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 async def main():
     # 'session_name' nomi noutbukdagi .session fayli nomi bilan bir xil bo'lishi kerak.
     # Agar noutbukda fayl nomi 'session_name.session' bo'lsa, bu yerga 'session_name' yoziladi.
-    client = TelegramClient('session_name', API_ID, API_HASH)
+    client = TelegramClient('FEIN', API_ID, API_HASH)
     
     await client.start()
     logging.info("Soat skripti VPS serverda muvaffaqiyatli ishga tushdi!")
@@ -33,7 +33,7 @@ async def main():
             
             # Agar daqiqa o'zgargan bo'lsa, nikni yangilash
             if current_time != last_time:
-                new_first_name = f"YourName | {current_time}" # 'YourName' o'rniga o'z nikingizni yozing
+                new_first_name = f"FEIN | {current_time}" # 'YourName' o'rniga o'z nikingizni yozing
                 
                 # Profilni yangilash
                 from telethon.tl.functions.account import UpdateProfileRequest
