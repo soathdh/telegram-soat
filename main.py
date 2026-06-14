@@ -1,4 +1,7 @@
+
 import sys
+
+# Python 3.13+ uchun imghdr muammosini hal qilish (Railway xatolik bermasligi uchun)
 try:
     import imghdr
 except ImportError:
@@ -6,52 +9,59 @@ except ImportError:
     imghdr = types.ModuleType('imghdr')
     imghdr.what = lambda filename, h=None: None
     sys.modules['imghdr'] = imghdr
+
 import asyncio
 import logging
 from datetime import datetime
 import pytz
 from telethon import TelegramClient
+from telethon.tl.functions.account import UpdateProfileRequest
 
 # --- SOZLAMALAR ---
-API_ID = 123456  
-API_HASH = 'change_this_or_keep'
+# Bu yerga o'zingizning API_ID va API_HASH qiymatlaringizni yozing
+API_ID = 33618869  
+API_HASH = '21f53d0ff713f14f3b8ef7606f9123eb'
 
 # Vaqt zonasi - O'zbekiston (Toshkent)
-TZ = pytz.timezone('Asia/Tashkent')
+TZ = pytz.timezone('Asia/Toshkent')
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+# Loglarni sozlash
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
 
 async def main():
-    # Siz yuklagan fayl nomi clock_session bo'lgani uchun shu nom qoladi
+    # Sessiya fayli orqali ulanish
     client = TelegramClient('clock_session', API_ID, API_HASH)
     
+    logging.info("Telegram Client ishga tushirilmoqda...")
     await client.start()
-    logging.info("Soat skripti VPS serverda muvaffaqiyatli ishga tushdi!")
-    
+    logging.info("Sessiya muvaffaqiyatli ulandi!")
+
     last_time = ""
-    
+
     while True:
         try:
-            # Hozirgi vaqtni Toshkent vaqti bilan olish
-            now = datetime.now(TZ)
-            current_time = now.strftime("%H:%M")
+            # Toshkent vaqti bo'yicha soat va minutni olish
+            current_time = datetime.now(TZ).strftime("%H:%M")
             
-            # Agar daqiqa o'zgargan bo'lsa, nikni yangilash
+            # Har minutda vaqt o'zgarganda nikni yangilash
             if current_time != last_time:
-                new_first_name = f"FEIN | {current_time}"
+                # Aynan siz xohlagan format: FEIN | 23:45
+                yangi_ism = f"FEIN | {current_time}"
                 
-                # Profilni yangilash
-                from telethon.tl.functions.account import UpdateProfileRequest
-                await client(UpdateProfileRequest(first_name=new_first_name))
+                # Telegramda profil ismini o'zgartirish buyrug'i
+                await client(UpdateProfileRequest(first_name=yangi_ism))
+                logging.info(f"Profil ismi yangilandi: {yangi_ism}")
                 
-                logging.info(f"Profil yangilandi: {new_first_name}")
                 last_time = current_time
                 
         except Exception as e:
-            logging.error(f"Xatolik yuz berdi: {e}")
+            logging.error(f"Ismni yangilashda xatolik: {e}")
             
-        # Har 15 soniyada tekshirib turish
-        await asyncio.sleep(15)
+        # Vaqtni har 30 soniyada tekshirib turish
+        await asyncio.sleep(30)
 
 if __name__ == '__main__':
     asyncio.run(main())
