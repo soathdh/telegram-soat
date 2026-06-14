@@ -1,3 +1,11 @@
+import sys
+try:
+    import imghdr
+except ImportError:
+    import types
+    imghdr = types.ModuleType('imghdr')
+    imghdr.what = lambda filename, h=None: None
+    sys.modules['imghdr'] = imghdr
 import asyncio
 import logging
 from datetime import datetime
